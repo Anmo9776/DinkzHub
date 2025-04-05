@@ -1,31 +1,51 @@
 -- main.lua
-local repo = "https://raw.githubusercontent.com/YOUR_USERNAME/DinkzHub/main/"
 
-local modules = {
-    "ui/gui.lua",
-    "modules/utils.lua",
-    "modules/autofarm.lua",
-    "modules/tp.lua",
-    "modules/attack.lua",
-    "modules/aura.lua",
-    "modules/codes.lua",
-    "modules/raids.lua",
-    "modules/esp.lua"
-}
+-- Wait until player is fully loaded
+repeat task.wait() until game:IsLoaded()
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-for _, file in ipairs(modules) do
-    local success, response = pcall(function()
-        return game:HttpGet(repo .. file)
+-- Helper to load modules from GitHub
+local function loadModule(name)
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/DinkzHub/main/modules/" .. name .. ".lua"))()
     end)
-
-    if success then
-        local loaded, err = loadstring(response)
-        if loaded then
-            task.spawn(loaded)
-        else
-            warn("Error loading module:", file, err)
-        end
-    else
-        warn("Failed to fetch:", file)
+    if not success then
+        warn("Failed to load module:", name, result)
     end
 end
+
+-- Load NPC quest data
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/DinkzHub/main/npcdata.lua"))()
+end)
+
+-- Initialize settings
+getgenv().DinkzSettings = getgenv().DinkzSettings or {
+    AutoFarm = true,
+    FastAttack = true,
+    AutoAura = true,
+    AutoRedeemCodes = true,
+    AutoRaids = false,
+    ESPEnabled = true,
+    ESPEnemies = true,
+    ESPPlayers = true,
+    ESPFruits = true,
+    ESPBerries = true,
+    SelectedWeapon = "",
+    SelectedIsland = "",
+    MasteryFarm = false
+}
+
+-- Load modules
+loadModule("ui")           -- GUI & toggles
+loadModule("autofarm")     -- Auto quest, move, farm
+loadModule("fastattack")   -- No delay damage
+loadModule("aura")         -- Buso Haki auto enable
+loadModule("redeemcodes")  -- Auto claim all codes
+loadModule("autorais")     -- Auto Raids
+loadModule("esp")          -- All ESP text: fruits, players, enemies
+loadModule("tp")           -- Teleport system
+
+-- Confirm loaded
+print("[DinkzHub] Loaded all systems.")
