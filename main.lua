@@ -17,7 +17,7 @@ end
 
 -- Load NPC quest data
 pcall(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/DinkzHub/main/npcdata.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Anmo9776/DinkzHub/main/npcdata.lua"))()
 end)
 
 -- Initialize settings
